@@ -16,24 +16,24 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y lftp
 
       - name: Deploy via SFTP (lftp)
-  env:
-    BEGET_HOST: ${{ secrets.BEGET_HOST }}
-    BEGET_USER: ${{ secrets.BEGET_USER }}
-    BEGET_PASS: ${{ secrets.BEGET_PASS }}
-    REMOTE_DIR: ${{ secrets.REMOTE_DIR }}   # у тебя это .
-  run: |
-    lftp -e "
-      set cmd:fail-exit true
-      set net:max-retries 2
-      set net:timeout 25
-      set sftp:auto-confirm yes
-      open -u ${BEGET_USER},${BEGET_PASS} -p 22 sftp://${BEGET_HOST}
-      echo 'Remote PWD before cd:'; pwd
-      cd ${REMOTE_DIR}
-      echo 'Remote PWD after cd:'; pwd
-      mirror --reverse --delete --verbose \
+        env:
+            BEGET_HOST: ${{ secrets.BEGET_HOST }}
+            BEGET_USER: ${{ secrets.BEGET_USER }}
+            BEGET_PASS: ${{ secrets.BEGET_PASS }}
+            REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+        run: |
+          lftp -e "
+           set cmd:fail-exit true
+           set net:max-retries 2
+           set net:timeout 25
+           set sftp:auto-confirm yes
+           open -u ${BEGET_USER},${BEGET_PASS} -p 22 sftp://${BEGET_HOST}
+           echo 'Remote PWD before cd:'; pwd
+           cd ${REMOTE_DIR}
+           echo 'Remote PWD after cd:'; pwd
+           mirror --reverse --delete --verbose \
              --exclude-glob '.git*' \
              --exclude 'README.md' \
              . .
-      bye
-    "
+           bye
+          "
