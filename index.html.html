@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Защита от субсидиарной ответственности - ООО Защитная Грамота</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Основные переменные */
+        :root {
+            --primary-blue: #003DC2;
+            --primary-gradient: linear-gradient(135deg, #003DC2, #0056E3);
+            --light-blue: #E7F1FF;
+            --medium-blue: #B8D4F1;
+            --dark-blue: #002A8F;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+            --medium-gray: #E9ECEF;
+            --dark-gray: #6C757D;
+            --text-dark: #2C3E50;
+            --shadow-light: 0 4px 12px rgba(0, 61, 194, 0.1);
+            --shadow-medium: 0 8px 24px rgba(0, 61, 194, 0.15);
+            --shadow-strong: 0 12px 36px rgba(0, 61, 194, 0.2);
+            --destructive: #DC2626;
+            --destructive-light: rgba(220, 38, 38, 0.1);
+            --muted-foreground: #64748B;
+            --foreground: #0F172A;
+            --background: #FFFFFF;
+            --secondary: #F1F5F9;
+            --card: #FFFFFF;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --gold: #FFD700;
+            --button-hover: #F01F1F;
+        }
+
+        /* Сброс стилей */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--white);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Классы для анимаций при прокрутке */
+        .animate-on-scroll {
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .slide-up {
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+
+        .slide-left {
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+
+        .slide-right {
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        .scale-in {
+            animation: scaleIn 0.8s ease-out forwards;
+        }
+
+        /* Шапка */
+        .header {
+            background: var(--white);
+            padding: 15px 0;
+            box-shadow: var(--shadow-light);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            color: var(--dark-blue);
+        }
+
+        .header-contacts {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-item::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+
+        .contact-item:hover {
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .contact-item:hover::before {
+            width: 100%;
+        }
+
+        .header-cta {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .header-cta:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .header-cta:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Герой-секция */
+        .hero {
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            padding: 140px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--light-blue) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, var(--medium-blue) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero-text h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-text .subtitle {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--dark-gray);
+            margin-bottom: 30px;
+            line-height: 1.4;
+            animation: slideInUp 1s ease-out 0.2s both;
+        }
+
+        .hero-text p {
+            font-size: 16px;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            animation: slideInUp 1s ease-out 0.4s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            animation: slideInUp 1s ease-out 0.6s both;
+        }
+
+        .cta-button {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 15px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .cta-button:hover {
+            background: var(--button-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .cta-secondary:hover {
+            background: var(--button-hover);
+            color: var(--white);
+            border-color: var(--button-hover);
+        }
+
+        .hero-illustration {
+            animation: slideInRight 1s ease-out;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Секция с вкладками */
+        .tabs-section {
+            width: 100%;
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--light-gray) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tabs-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Навигация вкладок */
+        .tabs-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .tabs-list {
+            display: flex;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: var(--shadow-medium);
+            gap: 8px;
+            flex-wrap: nowrap;
+            max-width: 100%;
+            overflow-x: auto;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .tab-button:hover::before {
+            opacity: 0.1;
+        }
+
+        .tab-button.active {
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 61, 194, 0.3);
+        }
+
+        .tab-button.active::before {
+            opacity: 1;
+        }
+
+        .tab-button i {
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Контент вкладок */
+        .tabs-content {
+            position: relative;
+            min-height: 600px;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: tabFadeIn 0.6s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Стили карточек */
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+            overflow: hidden;
+            transition: all 0.5s ease;
+            border: 1px solid var(--medium-gray);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--light-blue) 0%, var(--white) 100%);
+            border-bottom: 1px solid var(--medium-gray);
+            position: relative;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title i {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover .card-title i {
+            transform: scale(1.1);
+        }
+
+        .card-content {
+            padding: 2rem;
+        }
+
+        /* Примеры блоков */
+        .example-box {
+            background: transparent;
+            border: 1px solid var(--primary-blue);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .example-box:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .warning-box {
+            background: transparent;
+            border: 1px solid var(--destructive);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .warning-box:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Карточки лиц */
+        .liable-person-card {
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .liable-person-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .liable-person-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .liable-person-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .liable-person-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .liable-person-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .liable-person-card:hover .liable-person-icon {
+            transform: scale(1.1);
+        }
+
+        .liable-person-title {
+            font-weight: 600;
+            color: var(--foreground);
+            font-size: 1.1rem;
+        }
+
+        .liable-person-description {
+            color: var(--muted-foreground);
+            line-height: 1.6;
+            padding-left: 3.5rem;
+        }
+
+        /* Карточки шагов */
+        .step-card {
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid var(--primary-blue);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .step-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-card:hover .step-number {
+            transform: scale(1.1);
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-description {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Карточки преимуществ */
+        .why-us-card {
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-gray) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .why-us-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .why-us-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .why-us-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .why-us-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: var(--white);
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .why-us-card:hover .why-us-icon {
+            transform: scale(1.1);
+        }
+
+        /* Карточки цен */
+        .pricing-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid var(--medium-gray);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--primary-blue);
+            transform: scale(1.02);
+        }
+
+        .pricing-card.featured::before {
+            content: 'РЕКОМЕНДУЕМ';
+            position: absolute;
+            top: 15px;
+            right: -35px;
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 5px 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transform: rotate(45deg);
+            z-index: 1;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.02) translateY(-5px);
+        }
+
+        .pricing-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--light-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover .pricing-icon {
+            transform: scale(1.1);
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .pricing-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-description {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-period {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 0.3rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .pricing-cta {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .pricing-cta:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .pricing-cta:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Карточки отзывов */
+        .review-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--medium-gray);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .review-card::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--light-blue);
+            font-family: Georgia, serif;
+            opacity: 0.3;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .review-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: bold;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .review-card:hover .review-avatar {
+            transform: scale(1.1);
+        }
+
+        .review-info h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .review-info .title {
+            font-size: 1rem;
+            color: var(--muted-foreground);
+        }
+
+        .review-rating {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .review-rating i {
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+
+        .review-text {
+            font-style: italic;
+            color: var(--text-dark);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .review-author {
+            text-align: right;
+            margin-top: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            position: relative;
+            z-index: 1;
+            font-size: 1.1rem;
+        }
+
+        /* Финальный призыв к действию */
+        .final-cta {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .final-cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><circle fill="%23ffffff10" cx="100" cy="100" r="50"/><circle fill="%23ffffff10" cx="1100" cy="300" r="80"/><circle fill="%23ffffff10" cx="600" cy="50" r="30"/></svg>');
+            opacity: 0.3;
+            animation: float 20s linear infinite;
+        }
+
+        .final-cta-content {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .final-cta h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .final-cta:hover h2 {
+            transform: scale(1.05);
+        }
+
+        .final-cta p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .final-cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .final-cta .cta-button {
+            background: var(--white);
+            color: var(--primary-blue);
+        }
+
+        .final-cta .cta-button:hover {
+            background: var(--button-hover);
+            color: var(--white);
+        }
+
+        .final-cta .cta-secondary {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+
+        .final-cta .cta-secondary:hover {
+            background: var(--button-hover);
+            color: var(--white);
+            border-color: var(--button-hover);
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-contacts {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .hero {
+                padding: 120px 0 60px;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 32px;
+            }
+
+            .hero-illustration {
+                order: -1;
+            }
+
+            .tabs-list {
+                flex-direction: row;
+                flex-wrap: nowrap;
+                gap: 8px;
+                overflow-x: auto;
+            }
+
+            .tab-button {
+                justify-content: center;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .additional-pricing {
+                grid-template-columns: 1fr;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .final-cta h2 {
+                font-size: 28px;
+            }
+
+            .final-cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">ООО Защитная Грамота</a>
+                <div class="header-contacts">
+                    <a href="tel:+79675558182" class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        +7 967 555-81-82
+                    </a>
+                    <a href="tel:+74993017761" class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        +7 499 301-77-61
+                    </a>
+                    <a href="mailto:zgt-mail@yandex.ru" class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        zgt-mail@yandex.ru
+                    </a>
+                    <a href="#" class="header-cta">Заказать звонок</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Герой-секция -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Защита от субсидиарной ответственности</h1>
+                    <p class="subtitle">Предотвращение личных и финансовых рисков для руководителей и владельцев бизнеса</p>
+                    <p>Субсидиарная ответственность – это личная имущественная ответственность контролирующих должника лиц по долгам компании. В условиях банкротства кредиторы получают право взыскать долги с связанных лиц, если основная компания не может рассчитаться самостоятельно.</p>
+                    <p>Наша команда профессионалов с 17+ летним опытом поможет вам защитить личное имущество и избежать финансовых потерь.</p>
+                    <div class="hero-cta">
+                        <a href="#" class="cta-button">
+                            <i class="fas fa-shield-alt"></i>
+                            Получить консультацию
+                        </a>
+                        <a href="#" class="cta-button cta-secondary">
+                            <i class="fas fa-file-alt"></i>
+                            Узнать подробнее
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-illustration">
+                    <img src="public/hero-section%201.png" alt="Защита от субсидиарной ответственности" class="hero-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция с вкладками -->
+    <section class="tabs-section">
+        <div class="container">
+            <div class="tabs-container">
+                <div class="tabs-navigation animate-on-scroll">
+                    <div class="tabs-list">
+                        <button class="tab-button active" data-tab="what-is-it">
+                            <i class="fas fa-balance-scale"></i>
+                            <span>Что это?</span>
+                        </button>
+                        <button class="tab-button" data-tab="who-is-liable">
+                            <i class="fas fa-users"></i>
+                            <span>Кого могут привлечь?</span>
+                        </button>
+                        <button class="tab-button" data-tab="how-to-avoid">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Как избежать?</span>
+                        </button>
+                        <button class="tab-button" data-tab="how-we-work">
+                            <i class="fas fa-cogs"></i>
+                            <span>Как мы работаем</span>
+                        </button>
+                        <button class="tab-button" data-tab="why-us">
+                            <i class="fas fa-star"></i>
+                            <span>Почему мы?</span>
+                        </button>
+                        <button class="tab-button" data-tab="pricing">
+                            <i class="fas fa-tag"></i>
+                            <span>Цены</span>
+                        </button>
+                        <button class="tab-button" data-tab="reviews">
+                            <i class="fas fa-comments"></i>
+                            <span>Отзывы</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="tabs-content">
+                    <div id="what-is-it" class="tab-panel active">
+                        <div class="card animate-on-scroll">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-balance-scale"></i>
+                                    Что такое субсидиарная ответственность?
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <p>Субсидиарная ответственность — это правовой механизм, при котором долги компании могут быть переведены на личные активы лиц, которые контролируют или контролировали компанию. Это означает, что ваше личное имущество — дома, автомобили, сбережения — может оказаться под угрозой, если компания не сможет расплатиться с кредиторами.</p>
+                                
+                                <div class="example-box">
+                                    <h4><i class="fas fa-exclamation-triangle"></i> Пример из практики</h4>
+                                    <p>Директор принимает решение, которое приводит к банкротству компании. Если будет доказано, что решение было необоснованным и вредным, кредиторы могут подать в суд на директора лично, чтобы взыскать долги компании.</p>
+                                </div>
+                                
+                                <div class="warning-box">
+                                    <h4><i class="fas fa-exclamation-circle"></i> Важное примечание</h4>
+                                    <p>В отличие от многих других долгов, долги по субсидиарной ответственности часто не списываются даже после процедуры личного банкротства. Это делает упреждающую защиту крайне важной.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="who-is-liable" class="tab-panel">
+                        <div class="card animate-on-scroll">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-users"></i>
+                                    Кого могут привлечь к ответственности?
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                                    <div class="liable-person-card animate-on-scroll">
+                                        <div class="liable-person-header">
+                                            <div class="liable-person-icon">
+                                                <i class="fas fa-user-tie"></i>
+                                            </div>
+                                            <div class="liable-person-title">Генеральный директор</div>
+                                        </div>
+                                        <p class="liable-person-description">Основное лицо, принимающее решения, несет ответственность за действия компании.</p>
+                                    </div>
+                                    
+                                    <div class="liable-person-card animate-on-scroll">
+                                        <div class="liable-person-header">
+                                            <div class="liable-person-icon">
+                                                <i class="fas fa-users-cog"></i>
+                                            </div>
+                                            <div class="liable-person-title">Учредители</div>
+                                        </div>
+                                        <p class="liable-person-description">Владельцы бизнеса, которые контролируют его деятельность и принимают ключевые решения.</p>
+                                    </div>
+                                    
+                                    <div class="liable-person-card animate-on-scroll">
+                                        <div class="liable-person-header">
+                                            <div class="liable-person-icon">
+                                                <i class="fas fa-user-friends"></i>
+                                            </div>
+                                            <div class="liable-person-title">Финансовый директор</div>
+                                        </div>
+                                        <p class="liable-person-description">Лицо, отвечающее за финансовую политику и управление ресурсами компании.</p>
+                                    </div>
+                                    
+                                    <div class="liable-person-card animate-on-scroll">
+                                        <div class="liable-person-header">
+                                            <div class="liable-person-icon">
+                                                <i class="fas fa-briefcase"></i>
+                                            </div>
+                                            <div class="liable-person-title">Главный бухгалтер</div>
+                                        </div>
+                                        <p class="liable-person-description">Специалист, отвечающий за ведение бухгалтерского учета и финансовую отчетность.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="how-to-avoid" class="tab-panel">
+                        <div class="card animate-on-scroll">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Как избежать субсидиарной ответственности?
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                                    <div class="step-card animate-on-scroll">
+                                        <div class="step-number">1</div>
+                                        <h4 class="step-title">Юридический аудит</h4>
+                                        <p class="step-description">Комплексная проверка компании на предмет рисков привлечения к субсидиарной ответственности</p>
+                                    </div>
+                                    
+                                    <div class="step-card animate-on-scroll">
+                                        <div class="step-number">2</div>
+                                        <h4 class="step-title">Корпоративная реструктуризация</h4>
+                                        <p class="step-description">Изменение структуры владения и управления для минимизации рисков</p>
+                                    </div>
+                                    
+                                    <div class="step-card animate-on-scroll">
+                                        <div class="step-number">3</div>
+                                        <h4 class="step-title">Документальное оформление</h4>
+                                        <p class="step-description">Правильное оформление решений и действий для защиты в суде</p>
+                                    </div>
+                                    
+                                    <div class="step-card animate-on-scroll">
+                                        <div class="step-number">4</div>
+                                        <h4 class="step-title">Финансовое планирование</h4>
+                                        <p class="step-description">Разработка стратегии управления активами и обязательствами</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="example-box">
+                                    <h4><i class="fas fa-lightbulb"></i> Важно знать</h4>
+                                    <p>Защита должна быть заблаговременной. Меры, принятые после возникновения признаков банкротства, могут быть признаны недействительными.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="how-we-work" class="tab-panel">
+                        <div class="card animate-on-scroll">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-cogs"></i>
+                                    Как мы работаем
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: flex; flex-direction: column; gap: 2rem;">
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="font-weight: 600; color: var(--foreground); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                            Этап 1: Анализ ситуации
+                                        </h4>
+                                        <p style="color: var(--muted-foreground); line-height: 1.6;">Проводим комплексный аудит компании, выявляем потенциальные риски и уязвимости</p>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="font-weight: 600; color: var(--foreground); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                            Этап 2: Разработка стратегии
+                                        </h4>
+                                        <p style="color: var(--muted-foreground); line-height: 1.6;">Готовим индивидуальный план защиты с учетом специфики вашего бизнеса</p>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="font-weight: 600; color: var(--foreground); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                            Этап 3: Реализация мер
+                                        </h4>
+                                        <p style="color: var(--muted-foreground); line-height: 1.6;">Проводим юридические и финансовые мероприятия по защите активов</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 style="font-weight: 600; color: var(--foreground); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                            Этап 4: Сопровождение
+                                        </h4>
+                                        <p style="color: var(--muted-foreground); line-height: 1.6;">Обеспечиваем постоянную поддержку и мониторинг ситуации</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="why-us" class="tab-panel">
+                        <div class="card animate-on-scroll">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-star"></i>
+                                    Почему выбирают нас?
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                                    <div class="why-us-card animate-on-scroll">
+                                        <div class="why-us-icon">
+                                            <i class="fas fa-award"></i>
+                                        </div>
+                                        <h3>17+ лет опыта</h3>
+                                        <p>Работаем на рынке с 2006 года, защищая интересы бизнеса в самых сложных ситуациях</p>
+                                    </div>
+                                    
+                                    <div class="why-us-card animate-on-scroll">
+                                        <div class="why-us-icon">
+                                            <i class="fas fa-user-tie"></i>
+                                        </div>
+                                        <h3>Команда экспертов</h3>
+                                        <p>В штате только квалифицированные юристы и финансовые аналитики с подтвержденным опытом</p>
+                                    </div>
+                                    
+                                    <div class="why-us-card animate-on-scroll">
+                                        <div class="why-us-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <h3>Гарантия результата</h3>
+                                        <p>Предлагаем юридически обоснованные решения с гарантией защиты ваших активов</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="pricing" class="tab-panel">
+                        <div class="card animate-on-scroll">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-tag"></i>
+                                    Наши цены
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                                    <div class="pricing-card">
+                                        <div class="pricing-icon">
+                                            <i class="fas fa-phone"></i>
+                                        </div>
+                                        <h3 class="pricing-name">Первичная консультация</h3>
+                                        <p class="pricing-description">Телефонная или онлайн консультация</p>
+                                        <div class="pricing-price">0 ₽</div>
+                                        <p class="pricing-period">бесплатно</p>
+                                        <button class="pricing-cta">Заказать</button>
+                                    </div>
+                                    
+                                    <div class="pricing-card">
+                                        <div class="pricing-icon">
+                                            <i class="fas fa-user-tie"></i>
+                                        </div>
+                                        <h3 class="pricing-name">Личная встреча</h3>
+                                        <p class="pricing-description">Консультация в офисе</p>
+                                        <div class="pricing-price">5 000 ₽</div>
+                                        <p class="pricing-period">за 1 час</p>
+                                        <button class="pricing-cta">Заказать</button>
+                                    </div>
+                                    
+                                    <div class="pricing-card">
+                                        <div class="pricing-icon">
+                                            <i class="fas fa-file-contract"></i>
+                                        </div>
+                                        <h3 class="pricing-name">Договорное сопровождение</h3>
+                                        <p class="pricing-description">Анализ и подготовка договоров</p>
+                                        <div class="pricing-price">от 15 000 ₽</div>
+                                        <p class="pricing-period">за документ</p>
+                                        <button class="pricing-cta">Заказать</button>
+                                    </div>
+                                    
+                                    <div class="pricing-card">
+                                        <div class="pricing-icon">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                        <h3 class="pricing-name">Аудит рисков</h3>
+                                        <p class="pricing-description">Комплексная проверка компании</p>
+                                        <div class="pricing-price">от 50 000 ₽</div>
+                                        <p class="pricing-period">от 3 дней</p>
+                                        <button class="pricing-cta">Заказать</button>
+                                    </div>
+                                    
+                                    <div class="pricing-card featured">
+                                        <div class="pricing-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <h3 class="pricing-name">Комплексная защита</h3>
+                                        <p class="pricing-description">Полный пакет мер защиты</p>
+                                        <div class="pricing-price">от 150 000 ₽</div>
+                                        <p class="pricing-period">от 2 недель</p>
+                                        <ul class="pricing-features">
+                                            <li>Аудит рисков</li>
+                                            <li>Разработка стратегии</li>
+                                            <li>Реструктуризация</li>
+                                            <li>Сопровождение</li>
+                                        </ul>
+                                        <button class="pricing-cta">Заказать</button>
+                                    </div>
+                                    
+                                    <div class="pricing-card">
+                                        <div class="pricing-icon">
+                                            <i class="fas fa-balance-scale"></i>
+                                        </div>
+                                        <h3 class="pricing-name">Судебная защита</h3>
+                                        <p class="pricing-description">Представительство в суде</p>
+                                        <div class="pricing-price">от 80 000 ₽</div>
+                                        <p class="pricing-period">за заседание</p>
+                                        <button class="pricing-cta">Заказать</button>
+                                    </div>
+                                    
+                                    <div class="pricing-card">
+                                        <div class="pricing-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <h3 class="pricing-name">Почасовая оплата</h3>
+                                        <p class="pricing-description">Юридическое сопровождение</p>
+                                        <div class="pricing-price">от 5 000 ₽</div>
+                                        <p class="pricing-period">за час</p>
+                                        <button class="pricing-cta">Заказать</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="reviews" class="tab-panel">
+                        <div class="card animate-on-scroll">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-comments"></i>
+                                    Отзывы клиентов
+                                </h3>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;">
+                                    <div class="review-card">
+                                        <div class="review-header">
+                                            <div class="review-avatar">АК</div>
+                                            <div class="review-info">
+                                                <h4>Алексей Кузнецов</h4>
+                                                <p class="title">Генеральный директор, ООО "ТехноПром"</p>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <p class="review-text">Благодаря профессионализму команды "Защитная Грамота" удалось избежать субсидиарной ответственности при банкротстве компании. Комплексный подход и глубокое знание законодательства позволили защитить личное имущество.</p>
+                                        <p class="review-author">Алексей Кузнецов</p>
+                                    </div>
+                                    
+                                    <div class="review-card">
+                                        <div class="review-header">
+                                            <div class="review-avatar">ОС</div>
+                                            <div class="review-info">
+                                                <h4>Ольга Смирнова</h4>
+                                                <p class="title">Финансовый директор, ООО "СтройИнвест"</p>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                        <p class="review-text">Обратилась в компанию при первых признаках финансовых трудностей. Специалисты провели аудит и разработали стратегию защиты. В результате удалось избежать привлечения к ответственности и сохранить активы.</p>
+                                        <p class="review-author">Ольга Смирнова</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Финальный призыв к действию -->
+    <section class="final-cta">
+        <div class="container">
+            <div class="final-cta-content">
+                <h2>Готовы защитить свой бизнес?</h2>
+                <p>Свяжитесь с нами прямо сейчас и получите консультацию по защите от субсидиарной ответственности</p>
+                <div class="final-cta-buttons">
+                    <a href="#" class="cta-button">
+                        <i class="fas fa-phone"></i>
+                        Заказать звонок
+                    </a>
+                    <a href="#" class="cta-button cta-secondary">
+                        <i class="fas fa-envelope"></i>
+                        Написать нам
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Функциональность вкладок
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.getAttribute('data-tab');
+                    
+                    // Удаляем активный класс у всех кнопок и панелей
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanels.forEach(panel => panel.classList.remove('active'));
+                    
+                    // Добавляем активный класс к текущей кнопке и соответствующей панели
+                    button.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                    
+                    // Анимируем элементы в активной вкладке
+                    const animateElements = document.querySelectorAll(`#${targetTab} .animate-on-scroll`);
+                    animateElements.forEach((el, index) => {
+                        setTimeout(() => {
+                            el.classList.add('fade-in');
+                        }, index * 100);
+                    });
+                });
+            });
+            
+            // Анимация при прокрутке
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const element = entry.target;
+                        
+                        // Добавляем случайный класс анимации
+                        const animations = ['fade-in', 'slide-up', 'slide-left', 'slide-right', 'scale-in'];
+                        const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+                        
+                        element.classList.add(randomAnimation);
+                        observer.unobserve(element);
+                    }
+                });
+            }, observerOptions);
+            
+            // Наблюдаем за всеми элементами с классом animate-on-scroll
+            const animateElements = document.querySelectorAll('.animate-on-scroll');
+            animateElements.forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Эффект пульсации для кнопок
+            const buttons = document.querySelectorAll('.cta-button, .header-cta, .pricing-cta');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+            
+            // Плавная прокрутка к якорям
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
