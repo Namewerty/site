@@ -8,24 +8,20 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
-
       - name: Deploy via SFTP (lftp batch + timeout)
         env:
-          BEGET_HOST: ${{ secrets.BEGET_HOST }}     # denisoko.beget.tech
-          BEGET_USER: ${{ secrets.BEGET_USER }}     # ваш FTP/SFTP логин
-          BEGET_PASS: ${{ secrets.BEGET_PASS }}     # ваш FTP/SFTP пароль
-          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}     # у вас: .
-          LOCAL_DIR: .                              # поменяйте на dist, если есть сборка
+          BEGET_HOST: ${{ secrets.BEGET_HOST }}
+          BEGET_USER: ${{ secrets.BEGET_USER }}
+          BEGET_PASS: ${{ secrets.BEGET_PASS }}
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+          LOCAL_DIR: .
         run: |
           set -euo pipefail
-          echo "Creating lftp script..."
           cat > lftp.commands <<EOF
           set cmd:fail-exit true
           set net:timeout 25
@@ -33,22 +29,17 @@ jobs:
           set net:persist-retries 0
           set sftp:auto-confirm yes
           set xfer:timeout 25
-
           open -p 22 sftp://$BEGET_HOST
           user "$BEGET_USER" "$BEGET_PASS"
-
           pwd
           cd "$REMOTE_DIR"
           lcd "$LOCAL_DIR"
-
           mirror --reverse --delete --verbose --parallel=2 \
                  --exclude-glob ".git*" \
                  --exclude "README.md" \
                  "$LOCAL_DIR" .
-
           bye
           EOF
-
-          echo "Running lftp with 90s timeout..."
           timeout 90 lftp -f lftp.commands
+
 
