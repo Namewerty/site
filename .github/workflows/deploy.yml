@@ -15,23 +15,27 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Upload via SFTP/FTPS
+              - name: Deploy via SFTP (lftp)
         env:
           BEGET_HOST: ${{ secrets.BEGET_HOST }}
           BEGET_USER: ${{ secrets.BEGET_USER }}
           BEGET_PASS: ${{ secrets.BEGET_PASS }}
           REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
         run: |
-          # Зеркалим весь репозиторий (кроме служебного мусора) в public_html
-          lftp -u "$BEGET_USER","$BEGET_PASS" "$BEGET_HOST" <<EOF
-          set sftp:auto-confirm yes
-          set ftp:ssl-force true
-          set ssl:verify-certificate no
-          cd $REMOTE_DIR
-          mirror --reverse --delete --verbose \
-                 --exclude-glob ".git*" \
-                 --exclude "README.md" \
-                 .
-          bye
+          lftp -e "
+            set cmd:fail-exit true
+            set net:max-retries 2
+            set net:timeout 25
+            set sftp:auto-confirm yes
+            open -u ${BEGET_USER},${BEGET_PASS} -p 22 sftp://${BEGET_HOST}
+            pwd
+            cd ${REMOTE_DIR}
+            mirror --reverse --delete --verbose \
+                   --exclude-glob '.git*' \
+                   --exclude 'README.md' \
+                   . .
+            bye
+          "
+
           EOF
 
