@@ -1,45 +1,45 @@
-name: Deploy static site to Beget (SFTP)
+name: Deploy static site to Beget (FTPS)
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
+# чтобы не висели одновременные запуски
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-      - name: Deploy via SFTP (lftp batch + timeout)
-        env:
-          BEGET_HOST: ${{ secrets.BEGET_HOST }}
-          BEGET_USER: ${{ secrets.BEGET_USER }}
-          BEGET_PASS: ${{ secrets.BEGET_PASS }}
-          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
-          LOCAL_DIR: .
-        run: |
-          set -euo pipefail
-          cat > lftp.commands <<EOF
-          set cmd:fail-exit true
-          set net:timeout 25
-          set net:max-retries 1
-          set net:persist-retries 0
-          set sftp:auto-confirm yes
-          set xfer:timeout 25
-          open -p 22 sftp://$BEGET_HOST
-          user "$BEGET_USER" "$BEGET_PASS"
-          pwd
-          cd "$REMOTE_DIR"
-          lcd "$LOCAL_DIR"
-          mirror --reverse --delete --verbose --parallel=2 \
-                 --exclude-glob ".git*" \
-                 --exclude "README.md" \
-                 "$LOCAL_DIR" .
-          bye
-          EOF
-          timeout 90 lftp -f lftp.commands
-
+        
+      - name: Deploy via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.BEGET_HOST }}       # denisoko.beget.tech
+          username: ${{ secrets.BEGET_USER }}
+          password: ${{ secrets.BEGET_PASS }}
+          protocol: ftps                          # явный TLS на 21 порту
+          port: 21
+          # что отправляем: '.' — весь репозиторий; поменяйте на 'dist' если есть сборка
+          local-dir: .
+          # куда на сервере: '/' — корень FTP-аккаунта (у вас это public_html)
+          server-dir: ${{ secrets.REMOTE_DIR }}
+          # список исключений (маски)
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/.gitignore
+            **/.ftp-deploy-sync-state.json
+            **/node_modules/**
+            **/.DS_Store
+          # синхронизация: удалит на сервере файлы, которых нет локально
+          dangerous-clean-slate: true
+          # подробные логи
+          log-level: verbose
 
