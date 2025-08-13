@@ -1,4 +1,4 @@
-name: Deploy static site to Beget
+name: Deploy static site to Beget (SFTP)
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,25 +16,39 @@ jobs:
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      - name: Deploy via SFTP (lftp)
+      - name: Deploy via SFTP (lftp batch + timeout)
         env:
-            BEGET_HOST: ${{ secrets.BEGET_HOST }}
-            BEGET_USER: ${{ secrets.BEGET_USER }}
-            BEGET_PASS: ${{ secrets.BEGET_PASS }}
-            REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
+          BEGET_HOST: ${{ secrets.BEGET_HOST }}     # denisoko.beget.tech
+          BEGET_USER: ${{ secrets.BEGET_USER }}     # ваш FTP/SFTP логин
+          BEGET_PASS: ${{ secrets.BEGET_PASS }}     # ваш FTP/SFTP пароль
+          REMOTE_DIR: ${{ secrets.REMOTE_DIR }}     # у вас: .
+          LOCAL_DIR: .                              # поменяйте на dist, если есть сборка
         run: |
-          lftp -e "
-           set cmd:fail-exit true
-           set net:max-retries 2
-           set net:timeout 25
-           set sftp:auto-confirm yes
-           open -u ${BEGET_USER},${BEGET_PASS} -p 22 sftp://${BEGET_HOST}
-           echo 'Remote PWD before cd:'; pwd
-           cd ${REMOTE_DIR}
-           echo 'Remote PWD after cd:'; pwd
-           mirror --reverse --delete --verbose \
-             --exclude-glob '.git*' \
-             --exclude 'README.md' \
-             . .
-           bye
-          "
+          set -euo pipefail
+          echo "Creating lftp script..."
+          cat > lftp.commands <<EOF
+          set cmd:fail-exit true
+          set net:timeout 25
+          set net:max-retries 1
+          set net:persist-retries 0
+          set sftp:auto-confirm yes
+          set xfer:timeout 25
+
+          open -p 22 sftp://$BEGET_HOST
+          user "$BEGET_USER" "$BEGET_PASS"
+
+          pwd
+          cd "$REMOTE_DIR"
+          lcd "$LOCAL_DIR"
+
+          mirror --reverse --delete --verbose --parallel=2 \
+                 --exclude-glob ".git*" \
+                 --exclude "README.md" \
+                 "$LOCAL_DIR" .
+
+          bye
+          EOF
+
+          echo "Running lftp with 90s timeout..."
+          timeout 90 lftp -f lftp.commands
+
